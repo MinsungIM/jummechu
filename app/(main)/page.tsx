@@ -1,7 +1,13 @@
-// T1 파티 리스트 (대시보드 통합) — T-C 트랙이 실제 컨텐츠 구현
+// T1 파티 리스트 — 오늘의 모집 중인 파티
+import Link from 'next/link'
+import { listOpenParties, PartyCardView, EmptyState } from '@/features/party'
+
 export const metadata = { title: '파티 · 점메추' }
 
-export default function HomePage() {
+export const dynamic = 'force-dynamic'
+
+export default async function HomePage() {
+  const parties = await listOpenParties({})
   return (
     <div className="flex flex-col gap-6 py-4">
       <header className="px-2">
@@ -9,9 +15,25 @@ export default function HomePage() {
         <p className="text-sm text-ink-secondary mt-1">모집 중인 파티가 있나요?</p>
       </header>
 
-      {/* TODO T-C 트랙: 대시보드(추천·만족도) + 해시태그 칩 필터 + 파티 카드 리스트 */}
-      <div className="p-6 rounded-2xl bg-surface-primary text-center text-ink-muted">
-        T1 파티 리스트 — 구현 예정 (T-C 트랙)
+      {parties.length === 0 ? (
+        <EmptyState message="오늘 모집 중인 파티가 없어요. 직접 만들어볼까요?" />
+      ) : (
+        <ul className="flex flex-col gap-3">
+          {parties.map((p) => (
+            <li key={p.id}>
+              <PartyCardView party={p} />
+            </li>
+          ))}
+        </ul>
+      )}
+
+      <div className="px-2">
+        <Link
+          href="/parties/new"
+          className="block rounded-pill bg-surface-inverse text-ink-inverse text-center py-3 font-semibold"
+        >
+          + 새 파티 만들기
+        </Link>
       </div>
     </div>
   )

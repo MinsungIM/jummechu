@@ -1,14 +1,23 @@
-// S2 파티 상세 — T-C 트랙 placeholder
+// S2 파티 상세
+import { notFound } from 'next/navigation'
+import { getParty, PartyDetailView } from '@/features/party'
+import { getCurrentUser } from '@/features/auth'
+
 type Props = { params: Promise<{ partyId: string }> }
+
+export const dynamic = 'force-dynamic'
 
 export default async function PartyDetailPage({ params }: Props) {
   const { partyId } = await params
+  const id = Number(partyId)
+  if (!Number.isInteger(id) || id <= 0) notFound()
+
+  const [party, user] = await Promise.all([getParty(id), getCurrentUser()])
+  if (!party) notFound()
+
   return (
-    <div className="flex flex-col gap-4 py-4">
-      <h1 className="text-2xl font-bold text-ink px-2">파티 #{partyId}</h1>
-      <div className="p-6 rounded-2xl bg-surface-primary text-ink-muted">
-        S2 파티 상세 — 구현 예정 (T-C 트랙)
-      </div>
+    <div className="flex flex-col gap-4 py-4 px-2">
+      <PartyDetailView party={party} currentUserId={user?.id} />
     </div>
   )
 }

@@ -3,7 +3,9 @@
 //
 // Note: eslint-config-next 16.x + ESLint 9 flat config 호환 이슈로 next core-web-vitals
 // extends는 보류. 추후 (1) eslint-config-next 패치 또는 (2) @next/eslint-plugin-next 직접
-// 사용으로 복구 예정. 현재 lint는 Public API 컨벤션만 검사.
+// 사용으로 복구 예정. 현재 lint는 Public API 컨벤션 + 기본 TS 파싱만 검사.
+const tsParser = require('@typescript-eslint/parser')
+
 module.exports = [
   {
     ignores: [
@@ -15,6 +17,14 @@ module.exports = [
   },
   {
     files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: { jsx: true },
+      },
+    },
     rules: {
       'no-restricted-imports': [
         'error',

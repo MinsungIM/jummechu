@@ -394,3 +394,69 @@
 **Timestamp**: 2026-05-13T16:18:00Z (approx)
 **User Input**: "1번 진행 후 3번 진행"
 **AI Action**: (1) Next 16 마이그레이션 + 빌드 호환 fix + pnpm-lock 추가 커밋·푸시 → (2) 4 트랙 (T-A/T-B/T-C/T-D) 중 첫 트랙 선택 질문
+
+## [T-C party 트랙 진입 — Per-Unit Loop 첫 사이클]
+**Timestamp**: 2026-05-13T16:20:00Z (approx)
+**User Input**: "T-C party — 서비스의 핵심, 가장 염 명확 (추천)"
+**advisor 가이드** (호출 1회):
+1. `getDb()` 테스트 주입점 부재 — `createDb(url)` factory + `setDbForTesting()` 추가
+2. `joinParty` 동시성 invariant 명시 — `BEGIN IMMEDIATE` + 동일 트랜잭션 내 SELECT COUNT + INSERT, Promise.all 10개 통합 테스트
+3. **3 sub-batch 분할** (Read path / Write path / History+extras) — 각 sub-batch 별 build·test·commit·push
+4. **NFR Design + Infra Design SKIP** — 변경 없음
+5. NFR 질문 2개는 obvious — 시간 소스 server-side / cancellation = 파티장만, open 상태일 때만. 묻지 말고 결정
+6. PartyCard는 .pen `comp_PartyCard`(`ytr0D`) 그대로 변환
+7. advisor 더 부르지 마라
+**AI Action**: `aidlc-docs/construction/party/functional-design/functional-design.md` 작성 시작
+
+## [T-C Functional Design 작성 완료]
+**Timestamp**: 2026-05-13T16:25:00Z (approx)
+**Artifact**: `aidlc-docs/construction/party/functional-design/functional-design.md` (~340 lines, 10 섹션)
+**Coverage**:
+- §1 도메인 모델 + 6개 invariants (UNIQUE, capacity, depart > joinUntil 등)
+- §2 State machine (open → closed lazy / cancelled by owner)
+- §3 11개 server 함수 명세 (권한·검증·트랜잭션 경계·에러 코드)
+- §4 시간 소스(서버) + 취소 규칙 (advisor 가이드 inline)
+- §5 NFR inline (동시성 invariant + getDb 테스트 주입 리팩터 + 인덱스)
+- §6 외부 의존 (M1·M3) + T-B 미완성 시 vi.mock 대체 전략
+- §7 10개 에러 코드 표
+- §8 sub-batch 별 테스트 인벤토리 (Promise.all 10개 동시성 테스트 명시)
+- §9 UI ↔ 함수 매핑
+- §10 OOS
+**Next Action**: 표준 2-옵션 완료 메시지 표시 → 사용자 confirm → Code Generation Part 1 (sub-batch 1 Read path)
+
+## [User Approval — Functional Design Continue]
+**Timestamp**: 2026-05-13T16:28:00Z (approx)
+**User Input**: "계속진행"
+**Decision**: NFR Design + Infrastructure Design 정식 SKIP. Code Generation Part 1 진입.
+
+## [T-C Code Gen Part 1 — sub-batch 1 Plan 작성 완료]
+**Timestamp**: 2026-05-13T16:30:00Z (approx)
+**Artifact**: `aidlc-docs/construction/party/code/code-generation-plan-sub-batch-1.md`
+**Scope (Read path만)**:
+- 함수 3개: createParty / getParty / listOpenParties
+- API 3개: POST /api/parties / GET /api/parties / GET /api/parties/:id
+- 화면 3개: T1 파티 리스트 / F2 생성 폼 / S2 상세 (read-only)
+- lib/db.ts 리팩터 (createDb + setDbForTesting)
+- 테스트: party-validation + party-read-path (in-memory SQLite + lazy transition + 정렬·필터)
+- 24 파일 (17 신규 + 7 수정)
+- M3 미완성 대응: try/catch + null fallback + vi.mock
+**Next Action**: 사용자 confirm → Code Generation Part 2 (한 batch 생성)
+
+## [User Approval — 릴리즈 전까지 끝까지 진행 + 병렬화]
+**Timestamp**: 2026-05-13T17:00:00Z (approx)
+**User Input**: "모든 작업 단계단계 완료하면 커밋하고 끝까지 릴리즈 전까지 진행해. 작업 확인하고 계획해서 병렬로 작업 가능한거는 병렬로 작업해."
+**Decision (Broad scope approval)**:
+- Code Generation Part 2 (sub-batch 1, 2, 3) 자동 진행
+- 다른 트랙 (T-A / T-B / T-D) 진행 자동 승인 — 독립 트랙은 Agent worktree로 병렬
+- Build and Test stage 자동 진행
+- 단계마다 커밋·푸시
+**Execution Plan**:
+1. T-C sub-batch 1 (Read path) — 본 인스턴스 직접 실행 → 커밋·푸시
+2. T-C sub-batch 2 (Write path, 동시성 invariant) — 본 인스턴스 직접 실행 → 커밋·푸시
+3. T-C sub-batch 3 (History+extras) — 본 인스턴스 직접 실행 → 커밋·푸시
+4. T-A / T-B / T-D Functional Design + Code Generation — Agent (worktree 격리) 병렬 dispatch
+5. Build and Test stage
+6. 최종 릴리즈 커밋·푸시
+
+---
+

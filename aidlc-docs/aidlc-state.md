@@ -56,8 +56,13 @@
   - **I API stubs**: 13개 Route Handler 501 응답 + 인증 2개 실제 구현
   - **J 테스트 하네스**: vitest.config + playwright.config + smoke 3종 (unit/integration/e2e)
   - **K**: README setup 가이드
-- [ ] Per-Unit Loop (4 트랙 병렬 시작 — T-A·T-B·T-C·T-D)
-- [ ] Build and Test
+- [~] **Per-Unit Loop — T-C party 진행 중**
+  - Functional Design 작성 (advisor 가이드 압축: 도메인 모델 + state machine + joinParty invariant + getDb 테스트 주입 + NFR inline)
+  - NFR Requirements 별도 stage 대신 Functional Design에 inline (advisor 결정)
+  - NFR Design + Infrastructure Design: **SKIP** (변경 없음)
+  - Code Generation: 3 sub-batch로 분할 (1 Read path / 2 Write path / 3 History+extras) — 각 sub-batch 별 build·test·commit·push
+- [ ] Per-Unit Loop — T-A notification / T-B restaurant+map / T-D rating+rec
+- [ ] Build and Test (모든 트랙 완료 후)
 
 ### 🟢 CONSTRUCTION PHASE
 - [ ] Per-Unit Loop (각 단위별 Functional Design / NFR / Code Generation)
