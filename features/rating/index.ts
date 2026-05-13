@@ -1,36 +1,35 @@
-// M4 rating — Public API stub. unit-of-work-dependency.md M4 섹션.
-const NI = (): never => {
-  throw new Error('[features/rating] not implemented')
-}
+// M4 rating — Public API (외부에서 import 허용)
+// functional-design.md §0.1 채택 시그니처
 
-export type RestaurantRatingInput = {
-  restaurantId: number
-  partyId: number
-  raterId: number
-  stars?: number
-  tags?: string[]
-}
+// 타입
+export type {
+  RatingForRestaurant,
+  RatingForMenu,
+  RestaurantRatingStats,
+  MenuRatingStats,
+  RateRestaurantInput,
+  RateMenuInput,
+} from './types'
 
-export type MenuRatingInput = {
-  menuId: number
-  partyId: number
-  raterId: number
-  stars: number
-  comment?: string
-}
+// Server functions
+export { rateRestaurant } from './server/rateRestaurant'
+export { rateMenu } from './server/rateMenu'
+export { getRestaurantRatingStats } from './server/getRestaurantRatingStats'
+export { getMenuRatingStats } from './server/getMenuRatingStats'
+export { listMyRatings } from './server/listMyRatings'
+export { canRateRestaurant } from './server/canRateRestaurant'
+export { canRateMenu } from './server/canRateMenu'
 
-export type TagFreq = { label: string; count: number }
-export type RestaurantRatingSummary = {
-  restaurantId: number
-  restaurantName: string
-  avgStars: number
-  ratingCount: number
-}
+// 도메인 에러
+export {
+  ValidationError,
+  NotEligibleError,
+  RestaurantNotFoundError,
+  MenuNotFoundError,
+} from './server/_lib/errors'
 
-export async function rateRestaurant(_input: RestaurantRatingInput): Promise<void> { return NI() }
-export async function rateMenu(_input: MenuRatingInput): Promise<void> { return NI() }
-export async function getAvgRating(_restaurantId: number): Promise<number | null> { return NI() }
-export async function getMenuAvgRating(_menuId: number): Promise<number | null> { return NI() }
-export async function getRestaurantTagFrequency(_restaurantId: number): Promise<TagFreq[]> { return NI() }
-export async function getTopRatedRestaurants(_limit: number, _windowDays?: number): Promise<RestaurantRatingSummary[]> { return NI() }
-export async function canRate(_userId: number, _restaurantId: number): Promise<boolean> { return NI() }
+// 컴포넌트
+export { RatingStars } from './components/RatingStars'
+export { RatingForm, type RatingFormSubmit } from './components/RatingForm'
+export { RatingItem } from './components/RatingItem'
+export { RatingList, type RatingListEntry } from './components/RatingList'
