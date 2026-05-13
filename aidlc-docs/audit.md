@@ -460,3 +460,26 @@
 
 ---
 
+
+## [T-D Track — M4 rating + M5 recommendation 통합 작업]
+**Timestamp**: 2026-05-13T16:05:00Z (approx)
+**User Input**: "너는 jummechu 프로젝트의 T-D 트랙 (M4 rating + M5 recommendation) 담당 에이전트다. (전체 task 명세 — partyId 미포함 시그니처, canRate 단일 함수, user+restaurant upsert, T1 위젯 자체 fetch + Server Component, 빈 식당 graceful 처리 등)"
+**AI Response**:
+- Functional Design 작성 (`aidlc-docs/construction/rating-recommendation/functional-design/functional-design.md`)
+  - 사용자 시그니처를 채택 시그니처로 명시 + 의도적 deviation 3건 (partyId 추가, canRate 분리, comment for restaurant silent drop)
+- Code Generation Plan 작성 (`aidlc-docs/construction/rating-recommendation/code/code-generation-plan.md`)
+- 한 배치 실행:
+  - M4 server functions 8개 (rateRestaurant/rateMenu/getRestaurantRatingStats/getMenuRatingStats/listMyRatings/canRateRestaurant/canRateMenu + errors/validation lib)
+  - M4 컴포넌트 4종 (RatingStars/RatingForm/RatingItem/RatingList)
+  - M5 server functions 3개 (recommendForUser/getDailySatisfaction/listPopularThisWeek)
+  - M5 컴포넌트 2종 (SatisfactionGauge/DashboardWidget — Server Component, 자체 fetch X)
+  - features/{rating,recommendation}/index.ts 재작성
+  - API routes 3개 실제 구현 (/api/restaurants/[id]/ratings, /api/menus/[id]/ratings, /api/recommendations)
+  - 테스트 fixture (rating-factories.ts) + 통합 테스트 2종 (rating.test.ts 14건, recommendation.test.ts 8건)
+- 검증: `pnpm test` 58 passed / `pnpm lint` 통과 / `pnpm build` 통과
+- DashboardWidget는 `app/(main)/page.tsx`(T-C 소유)에 직접 import 추가하지 않음 (parent가 머지 시 통합)
+- `drizzle/schema/ratings.ts` 수정 없음 (스키마는 사용만)
+- M3 미완성 graceful: restaurants 비어 있으면 recommendForUser → [], canRateMenu menus 없음 → false
+**Context**: T-D 트랙 Per-Unit Loop (Functional Design + Code Generation 일괄) 완료. 다른 트랙 코드 미접근.
+
+---

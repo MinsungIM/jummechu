@@ -61,7 +61,16 @@
   - NFR Requirements 별도 stage 대신 Functional Design에 inline (advisor 결정)
   - NFR Design + Infrastructure Design: **SKIP** (변경 없음)
   - Code Generation: 3 sub-batch로 분할 (1 Read path / 2 Write path / 3 History+extras) — 각 sub-batch 별 build·test·commit·push
-- [ ] Per-Unit Loop — T-A notification / T-B restaurant+map / T-D rating+rec
+- [ ] Per-Unit Loop — T-A notification / T-B restaurant+map
+- [x] **Per-Unit Loop — T-D rating(M4) + recommendation(M5)** — 2026-05-13. Functional Design + Code Generation 일괄 (sub-batch 분할 X — 표면 작음). NFR Requirements / NFR Design / Infrastructure Design은 functional-design.md §7 inline 요약으로 대체 (SKIP).
+  - Functional Design: `aidlc-docs/construction/rating-recommendation/functional-design/functional-design.md`
+  - Code Generation Plan: `aidlc-docs/construction/rating-recommendation/code/code-generation-plan.md`
+  - Public API (`features/rating/index.ts`, `features/recommendation/index.ts`) 실제 구현으로 교체
+  - 시그니처 deviation 3건 (functional-design §0.2): partyId 인자 추가 / canRate 분리 / restaurant comment silent drop
+  - 컴포넌트: RatingStars, RatingForm, RatingItem, RatingList, SatisfactionGauge, DashboardWidget(Server Component)
+  - API: GET·POST /api/restaurants/[id]/ratings, GET·POST /api/menus/[id]/ratings, GET /api/recommendations
+  - 테스트: rating.test.ts (14건) + recommendation.test.ts (8건) — 58 passed
+  - 검증: `pnpm test` / `pnpm lint` / `pnpm build` 모두 통과
 - [ ] Build and Test (모든 트랙 완료 후)
 
 ### 🟢 CONSTRUCTION PHASE

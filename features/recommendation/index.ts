@@ -1,18 +1,13 @@
-// M5 recommendation — Public API stub. unit-of-work-dependency.md M5 섹션.
-import type { RestaurantRatingSummary } from '@/features/rating'
+// M5 recommendation — Public API
+// functional-design.md §0.1 채택 시그니처
 
-const NI = (): never => {
-  throw new Error('[features/recommendation] not implemented')
-}
+export type { RecommendationItem, RecommendationReason, Satisfaction } from './types'
 
-export type RecommendationCard = {
-  restaurantId: number
-  restaurantName: string
-  primaryMenu: { id: number; name: string; price: number | null } | null
-  reason: 'recent_skip' | 'high_rating' | 'random'
-  lastVisitedAt: number | null
-}
+// Server functions
+export { recommendForUser } from './server/recommendForUser'
+export { getDailySatisfaction } from './server/getDailySatisfaction'
+export { listPopularThisWeek } from './server/listPopularThisWeek'
 
-export async function getTodayRecommendations(_userId: number, _count: number): Promise<RecommendationCard[]> { return NI() }
-export async function reshuffleRecommendations(_userId: number, _excludeIds: number[]): Promise<RecommendationCard[]> { return NI() }
-export async function getSatisfactionTop(_limit: number): Promise<RestaurantRatingSummary[]> { return NI() }
+// 컴포넌트
+export { DashboardWidget } from './components/DashboardWidget'
+export { SatisfactionGauge } from './components/SatisfactionGauge'
