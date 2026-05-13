@@ -460,3 +460,57 @@
 
 ---
 
+
+## [T-C sub-batch 1 완료]
+**Timestamp**: 2026-05-13T17:25:00Z (approx)
+**Commit**: 74aa2c4 — T-C sub-batch 1 (Read path)
+**Pushed**: master
+**Tests**: 15 passed (smoke + party-validation 7 + party-read-path 5)
+**Build**: ✓ Next.js 16.2.6 turbopack, 16 routes
+**Lint**: ✓ ESLint flat config + TS parser (no errors)
+**Files**: 24 (17 신규 + 7 수정)
+**Next**: sub-batch 2 (Write path) — joinParty/leaveParty + 동시성 invariant
+
+
+## [병렬 Agent 3개 dispatch — T-A / T-B / T-D]
+**Timestamp**: 2026-05-13T17:35:00Z (approx)
+**AI Action**: worktree 격리 + run_in_background 로 3 트랙 동시 dispatch
+- T-A (M7 notification) agent
+- T-B (M3 restaurant + M6 map) agent
+- T-D (M4 rating + M5 recommendation) agent
+
+## [T-A 완료]
+**Timestamp**: 2026-05-13T17:48:00Z (approx)
+**Branch**: `worktree-agent-a1ab15e67cb90c5c0`, commit `64b775b`
+**Result**: 32 파일 (신규 26 / 수정 5 / 삭제 2), 49 테스트 통과 (notification 13 신규), lint·build 통과
+**Follow-up**: T-C `setNotice`/`cancelParty` → `notifyNotice`/`notifyCancelled` hook 연결 / 5분 전 cron 또는 lazy 트리거 / M7 dependency 문서 갱신
+
+## [T-D 완료]
+**Timestamp**: 2026-05-13T17:51:00Z (approx)
+**Branch**: `worktree-agent-a0f19b832fcf75ccd`, commit `ca7ea98`
+**Result**: M4 7 server fn + 4 컴포넌트, M5 3 server fn + 2 컴포넌트, API 3개, 통합 테스트 22건 추가, 58 테스트 통과. 시그니처 deviation 3건 명시. M3 미완성 graceful (빈 배열). DashboardWidget은 Server Component (main 페이지 미수정).
+
+## [T-B 완료]
+**Timestamp**: 2026-05-13T17:55:00Z (approx)
+**Branch**: `worktree-agent-ab9d059cc00b2fdf3`
+**Result**: M3 11 server 함수 + 태그 정규화 + tagRestaurant 트랜잭션 (멱등 + usage_count invariant), M6 NaverMap (env 없으면 placeholder graceful), API 5개, 페이지 3개 (S1·S8·T2) 교체, 38 테스트 신규 (총 74), tsc·test·lint·build 모두 통과.
+
+## [네이버 지도 키 검증 (사용자 요청)]
+**Timestamp**: 2026-05-13T18:00:00Z (approx)
+**User Input**: ".env 확인해봐 네이버 넣어놨는데 한번 테스트해봐봐"
+**.env 확인**:
+- NEXT_PUBLIC_NAVER_MAP_CLIENT_ID=lcqzay815d
+- NEXT_PUBLIC_NAVER_SECRET=... (⚠️ NEXT_PUBLIC_ prefix → 클라이언트 노출. NAVER_SECRET 으로 변경 + 키 재발급 권장)
+**검증 결과**:
+- JS SDK script (`maps.js?ncpKeyId=...`): ✓ 200 OK (156KB)
+- REST API (Reverse Geocoding / Static Map): 401 "subscription required" — NCP 콘솔에서 서비스 구독 필요
+- 임시 검증 페이지 (`app/naver-check/`)에서 SDK 인증 시도: **401 "Open API 인증 실패"** — Web Service URL 미등록
+**해결**: NCP 콘솔 → 본 Client ID → Web Service URL에 `http://localhost:3000`, `http://localhost:3001` 등록 후 재시도
+**Next Action**: 사용자가 도메인 등록 후 재검증
+
+## [Git 정리]
+**Timestamp**: 2026-05-13T18:05:00Z (approx)
+**User Input**: "git ignore정리해" / "일단 푸시해줘"
+**AI Action**: .gitignore 정리 — `.claude/worktrees/`, `.claude/*.lock`, `.playwright-mcp/`, `/*.png` 등 추가. 임시 PNG 스크린샷 4개 삭제.
+
+---

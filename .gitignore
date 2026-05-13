@@ -9,6 +9,7 @@
 /test-results
 /playwright-report
 /playwright/.cache
+.playwright-mcp/
 
 # next.js
 /.next/
@@ -48,3 +49,13 @@ next-env.d.ts
 # IDE
 .vscode/
 .idea/
+
+# Claude Code 세션 상태 (settings.json / settings.local.json만 tracked)
+.claude/worktrees/
+.claude/*.lock
+
+# 개발 중 생성된 스크린샷 (디자인 reference 는 requirements/ref/ 에만)
+/*.png
+/*.jpg
+/*.jpeg
+!/screenshots/
