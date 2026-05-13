@@ -28,16 +28,12 @@ export async function listOpenParties(filter: PartyFilter = {}): Promise<PartyCa
   // 2) tagIds 필터: 해시태그 → 식당 매핑 → restaurantId set
   let restaurantIdsByTag: number[] | undefined
   if (filter.tagIds && filter.tagIds.length > 0) {
-    try {
-      const rows = await db
-        .selectDistinct({ rid: restaurantTags.restaurantId })
-        .from(restaurantTags)
-        .where(inArray(restaurantTags.tagId, filter.tagIds))
-      restaurantIdsByTag = rows.map((r) => r.rid)
-      if (restaurantIdsByTag.length === 0) return []
-    } catch {
-      restaurantIdsByTag = undefined // M3 미완성 fallback
-    }
+    const rows = await db
+      .selectDistinct({ rid: restaurantTags.restaurantId })
+      .from(restaurantTags)
+      .where(inArray(restaurantTags.tagId, filter.tagIds))
+    restaurantIdsByTag = rows.map((r) => r.rid)
+    if (restaurantIdsByTag.length === 0) return []
   }
 
   // 3) 본 쿼리
@@ -66,21 +62,17 @@ export async function listOpenParties(filter: PartyFilter = {}): Promise<PartyCa
     .from(parties)
     .where(and(...whereConds))
 
-  // 4) 식당 이름 임베드 (M3 미완성 fallback)
+  // 4) 식당 이름 임베드
   let restaurantMap = new Map<number, string>()
   const restaurantIds = rows
     .map((r) => r.restaurantId)
     .filter((id): id is number => typeof id === 'number')
   if (restaurantIds.length > 0) {
-    try {
-      const restRows = await db
-        .select({ id: restaurants.id, name: restaurants.name })
-        .from(restaurants)
-        .where(inArray(restaurants.id, restaurantIds))
-      restaurantMap = new Map(restRows.map((r) => [r.id, r.name]))
-    } catch {
-      restaurantMap = new Map()
-    }
+    const restRows = await db
+      .select({ id: restaurants.id, name: restaurants.name })
+      .from(restaurants)
+      .where(inArray(restaurants.id, restaurantIds))
+    restaurantMap = new Map(restRows.map((r) => [r.id, r.name]))
   }
 
   // 5) 카드 매핑 + 정렬

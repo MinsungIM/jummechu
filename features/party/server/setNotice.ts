@@ -1,7 +1,8 @@
-// setNotice — Functional Design §3.6. owner만 가능.
+// setNotice — Functional Design §3.6. owner만 가능. 변경 시 멤버 fan-out 알림.
 import { eq } from 'drizzle-orm'
 import { getDb } from '@/lib/db'
 import { parties } from '@/drizzle/schema'
+import { notifyNotice } from '@/features/notification'
 import { PartyNotFoundError, NotOwnerError, ValidationError } from './_lib/errors'
 
 export async function setNotice(partyId: number, ownerId: number, text: string): Promise<void> {
@@ -19,4 +20,8 @@ export async function setNotice(partyId: number, ownerId: number, text: string):
 
     tx.update(parties).set({ notice: trimmed || null }).where(eq(parties.id, partyId)).run()
   })
+
+  if (trimmed) {
+    await notifyNotice(partyId, trimmed)
+  }
 }

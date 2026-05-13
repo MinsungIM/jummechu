@@ -13,6 +13,8 @@ module.exports = [
       'node_modules/**',
       'drizzle/migrations/**',
       'tests/e2e/**', // playwright config과 충돌 회피
+      '.claude/**', // worktree 산출물 lint 제외
+      '.playwright-mcp/**',
     ],
   },
   {

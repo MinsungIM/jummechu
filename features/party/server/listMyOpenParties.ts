@@ -30,15 +30,11 @@ export async function listMyOpenParties(userId: number): Promise<PartyCard[]> {
     .filter((id): id is number => typeof id === 'number')
   let restaurantMap = new Map<number, string>()
   if (restaurantIds.length > 0) {
-    try {
-      const restRows = await db
-        .select({ id: restaurants.id, name: restaurants.name })
-        .from(restaurants)
-        .where(inArray(restaurants.id, restaurantIds))
-      restaurantMap = new Map(restRows.map((r) => [r.id, r.name]))
-    } catch {
-      restaurantMap = new Map()
-    }
+    const restRows = await db
+      .select({ id: restaurants.id, name: restaurants.name })
+      .from(restaurants)
+      .where(inArray(restaurants.id, restaurantIds))
+    restaurantMap = new Map(restRows.map((r) => [r.id, r.name]))
   }
 
   return rows

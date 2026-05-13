@@ -27,19 +27,15 @@ export async function getParty(id: number): Promise<PartyDetail | null> {
     .innerJoin(users, eq(users.id, partyMembers.userId))
     .where(eq(partyMembers.partyId, id))
 
-  // 4) 식당 임베드 (M3 미완성 시 null fallback)
+  // 4) 식당 임베드
   let restaurant: { id: number; name: string } | null = null
   if (party.restaurantId) {
-    try {
-      const rows = await db
-        .select({ id: restaurants.id, name: restaurants.name })
-        .from(restaurants)
-        .where(eq(restaurants.id, party.restaurantId))
-        .limit(1)
-      restaurant = rows[0] ?? null
-    } catch {
-      restaurant = null
-    }
+    const rows = await db
+      .select({ id: restaurants.id, name: restaurants.name })
+      .from(restaurants)
+      .where(eq(restaurants.id, party.restaurantId))
+      .limit(1)
+    restaurant = rows[0] ?? null
   }
 
   return {

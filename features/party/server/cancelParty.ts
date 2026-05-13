@@ -1,7 +1,8 @@
-// cancelParty — Functional Design §3.7. owner만 가능. status='cancelled'.
+// cancelParty — Functional Design §3.7. owner만 가능. status='cancelled' + 멤버 fan-out 알림.
 import { eq } from 'drizzle-orm'
 import { getDb } from '@/lib/db'
 import { parties } from '@/drizzle/schema'
+import { notifyCancelled } from '@/features/notification'
 import { PartyNotFoundError, NotOwnerError, PartyClosedError } from './_lib/errors'
 
 export async function cancelParty(partyId: number, ownerId: number): Promise<void> {
@@ -15,4 +16,6 @@ export async function cancelParty(partyId: number, ownerId: number): Promise<voi
 
     tx.update(parties).set({ status: 'cancelled' }).where(eq(parties.id, partyId)).run()
   })
+
+  await notifyCancelled(partyId)
 }
