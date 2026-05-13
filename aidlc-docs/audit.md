@@ -514,3 +514,23 @@
 **AI Action**: .gitignore 정리 — `.claude/worktrees/`, `.claude/*.lock`, `.playwright-mcp/`, `/*.png` 등 추가. 임시 PNG 스크린샷 4개 삭제.
 
 ---
+
+## [3 worktree 머지 + 통합 검증]
+**Timestamp**: 2026-05-13T18:20:00Z (approx)
+**User Input**: "머지 진행해줘."
+**AI Action**:
+- T-B 머지 (`b4fce90`) — audit.md ours 충돌 해결, 74 tests pass
+- T-A 머지 (`ea82080`) — audit/state ours, 87 tests pass
+- T-D 머지 (`0da36f8`) — audit/state ours, 109 tests pass
+- 통합 commit (`5ea1a89`): T1 홈 DashboardWidget, setNotice/cancelParty hook, M3 fallback 제거, naver-check 삭제, eslint ignore .claude/ 추가
+
+## [Build and Test stage 산출물]
+**Timestamp**: 2026-05-13T18:35:00Z (approx)
+**User Input**: "ㄱㄱ"
+**AI Action**: `aidlc-docs/construction/build-and-test/` 5개 문서 생성 — build/unit-test/integration-test/performance/summary. AIDLC `build-and-test.md` rule details 준수. 검증 결과: 109/109 tests, lint 0 errors, build 28 routes OK.
+
+## [aidlc-state.md 최종 갱신]
+**Timestamp**: 2026-05-13T18:38:00Z (approx)
+**AI Action**: Current Stage → "CONSTRUCTION 완료 → 릴리즈 직전". 4 트랙 Per-Unit Loop + Build and Test 모두 [x]. OPERATIONS는 [-] placeholder.
+
+---

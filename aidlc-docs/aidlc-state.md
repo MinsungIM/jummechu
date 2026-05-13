@@ -4,7 +4,7 @@
 - **Project Name**: jummechu (점메추 — 점심 메뉴 추천)
 - **Project Type**: Greenfield
 - **Start Date**: 2026-05-13
-- **Current Stage**: INCEPTION → Units Generation 진입 직전
+- **Current Stage**: CONSTRUCTION 완료 → 릴리즈 직전 (OPERATIONS는 placeholder)
 - **Workspace Pattern**: 기존 `requirements/` 브레인스토밍 문서 패턴 유지 + `aidlc-docs/`에 트래킹 파일만 추가 (하이브리드)
 
 ## Workspace State
@@ -56,21 +56,18 @@
   - **I API stubs**: 13개 Route Handler 501 응답 + 인증 2개 실제 구현
   - **J 테스트 하네스**: vitest.config + playwright.config + smoke 3종 (unit/integration/e2e)
   - **K**: README setup 가이드
-- [~] **Per-Unit Loop — T-C party 진행 중**
-  - Functional Design 작성 (advisor 가이드 압축: 도메인 모델 + state machine + joinParty invariant + getDb 테스트 주입 + NFR inline)
-  - NFR Requirements 별도 stage 대신 Functional Design에 inline (advisor 결정)
-  - NFR Design + Infrastructure Design: **SKIP** (변경 없음)
-  - Code Generation: 3 sub-batch로 분할 (1 Read path / 2 Write path / 3 History+extras) — 각 sub-batch 별 build·test·commit·push
-- [~] Per-Unit Loop — T-A notification / T-B restaurant+map / T-D rating+rec
-  - T-B restaurant+map: ✅ Functional Design + Code Generation 완료 (74개 테스트 통과, build·lint 통과). 산출물: `aidlc-docs/construction/restaurant-map/`. 한 배치 진행 (sub-batch 분리 없음).
-- [ ] Build and Test (모든 트랙 완료 후)
-
-### 🟢 CONSTRUCTION PHASE
-- [ ] Per-Unit Loop (각 단위별 Functional Design / NFR / Code Generation)
-- [ ] Build and Test
+- [x] **Per-Unit Loop — T-C party** (sub-batch 1·2·3, 33 테스트, 커밋 `74aa2c4`/`3229644`/`fbe8d47`)
+  - Functional Design: `aidlc-docs/construction/party/functional-design/functional-design.md`
+  - NFR inline, NFR Design + Infrastructure Design SKIP
+  - Code Generation 3 sub-batch (Read/Write/History) 모두 master에 commit·push
+- [x] **Per-Unit Loop — T-A notification** (Agent worktree 격리, 13 테스트, branch `worktree-agent-a1ab15e67cb90c5c0` → master merge `ea82080`)
+- [x] **Per-Unit Loop — T-B restaurant + map** (Agent worktree, 24 테스트, merge `b4fce90`)
+- [x] **Per-Unit Loop — T-D rating + recommendation** (Agent worktree, 22 테스트, merge `0da36f8`)
+- [x] **4 트랙 통합** (`5ea1a89`): T1 홈에 DashboardWidget 추가, setNotice/cancelParty → notify hook 연결, M3 fallback 제거, naver-check 임시 페이지 삭제
+- [x] **Build and Test** — `aidlc-docs/construction/build-and-test/` 5 문서. 통합 검증: 109/109 tests, lint clean, build 28 routes
 
 ### 🟡 OPERATIONS PHASE
-- [ ] Operations (placeholder)
+- [-] Operations — placeholder (CLAUDE.md 정의대로 미실행. 운영 후속 작업)
 
 ## Key Decisions Snapshot
 
