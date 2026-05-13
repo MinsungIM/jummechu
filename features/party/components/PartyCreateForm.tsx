@@ -4,6 +4,7 @@ import { useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
+import type { CreatePartyInput } from '../types'
 
 type FieldErrors = Record<string, string>
 
@@ -12,7 +13,9 @@ function tsFromLocal(value: string): number {
   return new Date(value).getTime()
 }
 
-export function PartyCreateForm() {
+type Props = { prefill?: CreatePartyInput }
+
+export function PartyCreateForm({ prefill }: Props = {}) {
   const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
@@ -29,9 +32,10 @@ export function PartyCreateForm() {
     const departAtRaw = String(fd.get('departAt') ?? '')
     const joinUntilRaw = String(fd.get('joinUntil') ?? '')
 
+    const restaurantIdRaw = String(fd.get('restaurantId') ?? '')
     const payload = {
       name: String(fd.get('name') ?? '').trim(),
-      restaurantId: null,
+      restaurantId: restaurantIdRaw && Number(restaurantIdRaw) > 0 ? Number(restaurantIdRaw) : null,
       restaurantNameFreetext: String(fd.get('restaurantNameFreetext') ?? '').trim() || undefined,
       departAt: departAtRaw ? tsFromLocal(departAtRaw) : 0,
       joinUntil: joinUntilRaw ? tsFromLocal(joinUntilRaw) : 0,
@@ -69,12 +73,21 @@ export function PartyCreateForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4 pb-24">
-      <Input name="name" label="파티 이름 *" placeholder="예) 든든한 점심" required error={fieldErrors.name} />
+      {prefill?.restaurantId && <input type="hidden" name="restaurantId" defaultValue={prefill.restaurantId} />}
+      <Input
+        name="name"
+        label="파티 이름 *"
+        placeholder="예) 든든한 점심"
+        required
+        defaultValue={prefill?.name}
+        error={fieldErrors.name}
+      />
       <Input
         name="restaurantNameFreetext"
         label="메뉴 / 식당 *"
         placeholder="예) 김밥천국"
         required
+        defaultValue={prefill?.restaurantNameFreetext}
         error={fieldErrors.restaurantNameFreetext}
       />
 
@@ -101,21 +114,46 @@ export function PartyCreateForm() {
         type="number"
         min={2}
         max={50}
-        defaultValue={4}
+        defaultValue={prefill?.capacity ?? 4}
         required
         error={fieldErrors.capacity}
       />
 
-      <Input name="place" label="만남 장소" placeholder="예) 1층 로비" />
-      <Input name="priceBand" label="가격대" placeholder="예) 1만원대" />
+      <Input
+        name="place"
+        label="만남 장소"
+        placeholder="예) 1층 로비"
+        defaultValue={prefill?.place ?? ''}
+      />
+      <Input
+        name="priceBand"
+        label="가격대"
+        placeholder="예) 1만원대"
+        defaultValue={prefill?.priceBand ?? ''}
+      />
 
-      <details className="rounded-2xl bg-surface-primary p-4">
+      <details className="rounded-2xl bg-surface-primary p-4" open={!!prefill}>
         <summary className="text-sm font-semibold text-ink cursor-pointer">추가 옵션</summary>
         <div className="flex flex-col gap-3 mt-3">
-          <Input name="rules" label="파티 규칙" placeholder="예) 1만원 이하만" />
-          <Input name="extraSchedule" label="추가 일정" placeholder="예) 식후 카페" />
+          <Input
+            name="rules"
+            label="파티 규칙"
+            placeholder="예) 1만원 이하만"
+            defaultValue={prefill?.rules}
+          />
+          <Input
+            name="extraSchedule"
+            label="추가 일정"
+            placeholder="예) 식후 카페"
+            defaultValue={prefill?.extraSchedule}
+          />
           <label className="flex items-center gap-2 px-1">
-            <input name="isSilent" type="checkbox" className="size-4 accent-accent-primary" />
+            <input
+              name="isSilent"
+              type="checkbox"
+              className="size-4 accent-accent-primary"
+              defaultChecked={prefill?.isSilent}
+            />
             <span className="text-sm text-ink">🤫 조용한 식사 모임</span>
           </label>
         </div>

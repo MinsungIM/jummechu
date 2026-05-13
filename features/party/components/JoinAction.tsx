@@ -19,9 +19,38 @@ export function JoinAction({ partyId, isMember, isOwner, isFull, isOpen }: Props
   const [error, setError] = useState<string | null>(null)
 
   if (isOwner) {
+    if (!isOpen) {
+      return (
+        <div className="rounded-pill bg-surface-secondary px-4 py-2 text-sm text-ink-muted text-center">
+          {isOpen ? '모집중' : '종료된 파티'}
+        </div>
+      )
+    }
     return (
-      <div className="rounded-pill bg-accent-primary/20 px-4 py-2 text-sm text-ink text-center">
-        방장입니다 (취소는 다음 업데이트)
+      <div className="flex flex-col gap-2">
+        {error && <p className="text-xs text-category-han px-1">{error}</p>}
+        <Button
+          variant="secondary"
+          size="lg"
+          pill
+          className="w-full"
+          disabled={pending}
+          onClick={() => {
+            if (!confirm('파티를 취소(무산)할까요? 모든 멤버에게 알림이 갑니다.')) return
+            setError(null)
+            start(async () => {
+              const res = await fetch(`/api/parties/${partyId}`, { method: 'DELETE' })
+              const json = await res.json()
+              if (!res.ok) {
+                setError(json?.error?.message ?? '오류')
+                return
+              }
+              router.refresh()
+            })
+          }}
+        >
+          {pending ? '처리 중…' : '파티 취소'}
+        </Button>
       </div>
     )
   }
