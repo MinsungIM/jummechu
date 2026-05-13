@@ -11,7 +11,14 @@
 ### T1. 지도 API: 네이버 vs 카카오
 **관련 요구사항**: §2.1 음식점 정보(지도 표시), §4.1
 
-**확인 항목**
+**결정 (2026-05-13)**: **네이버 지도** 사용
+
+**남은 확인 항목** (구현 단계에서 처리)
+- 무료 호출 한도 / 초과 시 동작
+- React 통합 (JS SDK or 래퍼 라이브러리)
+- 길찾기 외부 딥링크 URL 스킴
+
+**원본 확인 항목 (참고용)**
 - 가격 정책 / 월 무료 호출 한도
 - 인증 방식 (API 키 / OAuth / 도메인 제한)
 - 제공 기능
@@ -35,25 +42,33 @@
 
 ---
 
-### T2. 인증·세션 모델 (실명 입장)
-**관련 요구사항**: §0 이름만 치고 입장, §2.3 동명이인 처리, §5.2 사용 범위
+### T2. 인증·세션 모델 (이메일 기반 간단 회원가입)
+**관련 요구사항**: §0 회원가입(이름/이메일/패스워드), §0.1 인증 미정/검토, §6.2 사용 범위(사내 전용)
 
-**확인 항목**
-- "회원가입 없이 실명만"의 보안 한계
-  - 본인 확인 불가 → 사칭 가능성
-  - 동명이인 구분
-  - 세션 영속성(브라우저 닫으면?)
-- 사용 범위에 따라 갈리는 분기
-  - 사내 전용이면 SSO 후보: Google Workspace / SAML / 슬랙 OAuth
-  - 공개라면 익명 + 닉네임 정책
-- 게스트 세션을 쿠키/localStorage만으로 유지할 때 trade-off
+**결정 (2026-05-13)**:
+- 사용 범위: **사내 전용** 확정 (배포/공유 범위로 통제)
+- 인증 방식: **이메일/패스워드 자체 회원가입**. SSO(Google/Slack OAuth)는 후순위
+- 동명이인 문제는 이메일 식별로 해소
+- **도메인 화이트리스트 강제 안 함**
+- **이메일 인증(확인 메일) 제외** — 가입 즉시 사용
+- **자유 가입** (관리자 초대 X)
 
-**방문 대상**
-- Google Identity OIDC 가이드: https://developers.google.com/identity/openid-connect/openid-connect
-- Slack Sign in with Slack: https://api.slack.com/authentication/sign-in-with-slack
+**확정 추가 (2026-05-13)**:
+- 패스워드 정책: **최소 8자 + 영문·숫자 조합** (특수문자 강제 X, 만료 X)
+- 패스워드 재설정: **MVP 범위에서 제외** (관리자가 DB 직접 처리). F1에 재설정 링크 노출 X
+- 세션 유지: **항상 로그인 유지** (명시적 로그아웃 전까지). rememberMe 토글 없음
+
+**남은 확인 항목**
+- 해싱 알고리즘 (bcrypt vs argon2 — 구현 단계에서 결정)
+- 세션 토큰 저장 위치 (httpOnly 쿠키 vs localStorage) — 세션 만료가 없으므로 만료 정책은 N/A이나 토큰 저장 위치는 보안상 선택 필요
+
+**방문 대상** (후순위/참고)
+- OWASP Authentication Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html
+- OWASP Password Storage Cheat Sheet: https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
 - MDN — Web Storage / Cookies 보안 가이드
+- ~~Google Identity OIDC~~ / ~~Slack Sign in with Slack~~ — 후순위 (자체 가입 선택으로 우선순위 하향)
 
-**산출물**: 분기별 인증 전략 결정 (사내 vs 공개), 동명이인 보조 필드 정의
+**산출물**: 패스워드 정책 / 재설정 흐름 / 세션 만료 정책 1장, 도메인 화이트리스트 적용 여부 결정
 
 ---
 
@@ -176,8 +191,20 @@
 ### T10. 백엔드 스택·DB 선택
 **관련 요구사항**: §5 전반
 
-- 사내 소규모 도구 기준 후보: Supabase / Firebase / 자체 Node·Spring + Postgres
-- Playwright 비중 낮음 — 별도 코드·문서 비교 위주
+**결정 (2026-05-13)**:
+- **스택: Next.js 풀스택 (App Router + API Routes) + better-sqlite3 + SQLite 단일 파일**
+- 프론트/백엔드 동일 리포·동일 언어 (TypeScript), 배포는 단일 Node 서버 (Vercel 또는 자체 호스팅)
+- DB: SQLite — 운영·백업 단순, 단일 파일
+
+**확정 추가 (2026-05-13)**:
+- **ORM**: Drizzle (better-sqlite3 어댑터)
+- **인증**: NextAuth (Auth.js) + Credentials Provider
+- **API 표면**: Route Handlers (`app/api/*/route.ts`) 위주
+- 호스팅: 자체 Node 서버 (단일 인스턴스, SQLite 단일 파일 운영 전제)
+
+**남은 확인 항목**
+- 백업 전략 (파일 복사 + 정기 스냅샷 / SQLite VACUUM)
+- 동시 접속 한계 가늠 (점심 시간대 사내 인원 동시 접속)
 
 ---
 
@@ -195,8 +222,8 @@ Playwright는 페이지 캡처·핵심 텍스트 추출용으로만. 의사결�
 
 ## 진행 체크리스트
 
-- [ ] T1. 지도 API 비교
-- [ ] T2. 인증·세션 모델
+- [x] T1. 지도 API 비교 — **네이버 지도 확정**
+- [~] T2. 인증·세션 모델 — 큰 방향 결정 (사내 전용 + 이메일/패스워드 자체 가입). 패스워드 정책·재설정·세션 만료·도메인 화이트리스트는 잔여 검토
 - [ ] T3. 슬랙 연동 방식
 - [ ] T4. 브라우저 알림
 - [ ] T5. 날씨 API
@@ -204,4 +231,4 @@ Playwright는 페이지 캡처·핵심 텍스트 추출용으로만. 의사결�
 - [ ] T7. 해시태그 자동완성 UX
 - [ ] T8. 반응형 베이스라인
 - [ ] T9. 캘린더 연동 (Stretch)
-- [ ] T10. 백엔드 스택·DB (Playwright 비중 낮음)
+- [x] T10. 백엔드 스택·DB — **Next.js 풀스택 + better-sqlite3 + SQLite 확정** (호스팅·ORM·인증 라이브러리는 잔여)
