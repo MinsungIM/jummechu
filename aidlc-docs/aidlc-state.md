@@ -61,7 +61,19 @@
   - NFR Requirements 별도 stage 대신 Functional Design에 inline (advisor 결정)
   - NFR Design + Infrastructure Design: **SKIP** (변경 없음)
   - Code Generation: 3 sub-batch로 분할 (1 Read path / 2 Write path / 3 History+extras) — 각 sub-batch 별 build·test·commit·push
-- [ ] Per-Unit Loop — T-A notification / T-B restaurant+map / T-D rating+rec
+- [~] **Per-Unit Loop — T-A notification 진행 완료** (단일 batch, advisor 가이드 반영)
+  - Functional Design: `aidlc-docs/construction/notification/functional-design/functional-design.md` (12 섹션)
+  - Code Generation Plan: `aidlc-docs/construction/notification/code/code-generation-plan.md`
+  - 산출물:
+    - DB: `drizzle/schema/notifications.ts` 신규 + 마이그레이션 `0001_useful_leech.sql`
+    - 8 server 함수 (listMyUnread / listMy / markRead / markAllRead / notifyDepartSoon / notifyNotice / notifyCancelled + types · errors · mappers)
+    - 4 UI 컴포넌트 (NotificationBadge / NotificationList / NotificationItem / InAppBanner) + `/notifications` 페이지
+    - 3 API Route Handler (GET /api/notifications, POST /api/notifications/read-all, POST /api/notifications/[id]/read)
+    - `app/(main)/layout.tsx` sticky header 신설 (종 + 배지) + InAppBanner 마운트
+    - 기존 D+0 stub 재작성 (호출자 없음 — breaking change 없음)
+    - integration test 13 시나리오 (markRead I-3 권한 + depart_soon I-2 idempotency 핵심 검증)
+  - 빌드: `pnpm test` 49 passed / `pnpm lint` 통과 / `pnpm build` 통과
+- [ ] Per-Unit Loop — T-B restaurant+map / T-D rating+rec
 - [ ] Build and Test (모든 트랙 완료 후)
 
 ### 🟢 CONSTRUCTION PHASE

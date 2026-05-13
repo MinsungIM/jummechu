@@ -460,3 +460,49 @@
 
 ---
 
+## [T-A notification — Track 시작]
+**Timestamp**: 2026-05-13T17:30:00Z (approx)
+**User Input (Agent 호출)**: "너는 jummechu 프로젝트의 T-A 트랙 (M7 notification) 담당 에이전트다." (전체 spec 생략 — 8 함수 + DB 테이블 + UI 컴포넌트 + API 3종)
+**Context**: T-A worktree (`worktree-agent-a1ab15e67cb90c5c0`). Spec이 D+0의 `unit-of-work-dependency.md` M7 시그니처(`getUpcomingDeparturesForUser` 1개)를 **완전 대체**하는 8 함수 + `notifications` 테이블 신규 추가
+**Decision**:
+- 기존 stub (`features/notification/index.ts`, `InAppNotificationBanner.tsx`, `useDepartureReminders.ts`) **완전 재작성**. 의존자 없음 (matrix상 M7은 호출 0개)
+- `aidlc-docs/inception/application-design/unit-of-work-dependency.md` M7 섹션은 후속에서 갱신 (out-of-scope, T-A는 코드에 집중)
+- advisor 가이드 반영: notifyDepartSoon idempotency / markRead WHERE user_id AND id / NotificationBadge 마운트 위치 (헤더 신규 또는 fixed floating)
+
+## [T-A Functional Design 작성 시작]
+**Timestamp**: 2026-05-13T17:32:00Z (approx)
+**Action**: `aidlc-docs/construction/notification/functional-design/functional-design.md` 작성 — 도메인 모델 + state + 8 함수 + 에러 + UI 매핑 + 테스트 인벤토리
+
+## [T-A Functional Design 완료 + Code Generation Plan]
+**Timestamp**: 2026-05-13T17:40:00Z (approx)
+**Artifacts**:
+- `aidlc-docs/construction/notification/functional-design/functional-design.md` — 12 섹션 (도메인 모델 + state + 8 함수 명세 + 권한·시간 + NFR + 외부 의존 + DB 스키마 + 에러 + UI 매핑 + 테스트 인벤토리 + OOS + decision record)
+- `aidlc-docs/construction/notification/code/code-generation-plan.md` — 단일 batch 파일 리스트 (체크박스)
+**Decision**: D+0 stub은 호출자 0 → breaking change 없음 → 완전 재작성. NFR/Infrastructure Design은 inline (T-C 패턴).
+
+## [T-A Code Generation 완료]
+**Timestamp**: 2026-05-13T18:00:00Z (approx)
+**Artifacts (코드)**:
+- `drizzle/schema/notifications.ts` + `drizzle/schema/index.ts` (export 추가)
+- `drizzle/migrations/0001_useful_leech.sql` (`pnpm db:generate` 산출물)
+- `features/notification/types.ts`
+- `features/notification/server/_lib/errors.ts`, `_lib/mappers.ts`
+- `features/notification/server/{listMyUnread,listMy,markRead,markAllRead,notifyDepartSoon,notifyNotice,notifyCancelled}.ts`
+- `features/notification/components/{NotificationBadge,NotificationList,NotificationItem,InAppBanner}.tsx`
+- `features/notification/index.ts` (재작성)
+- `app/(main)/notifications/page.tsx`
+- `app/api/notifications/route.ts`, `read-all/route.ts`, `[id]/read/route.ts`
+- `app/(main)/layout.tsx` (sticky header + InAppBanner 마운트)
+- `tests/integration/notification.test.ts` (13 시나리오)
+- 기존 stub 삭제: `features/notification/components/InAppNotificationBanner.tsx`, `features/notification/hooks/useDepartureReminders.ts`
+**Verification**:
+- `pnpm test` → 49 passed (7 files)
+- `pnpm lint` → 통과
+- `pnpm build` → 통과 (`/api/notifications`, `/notifications` route 등록 확인)
+**Advisor 가이드 반영**:
+- I-2 idempotency: `notifyDepartSoon` 두 번째 호출 시 0 insert (테스트 명시)
+- I-3 권한: `markRead` 는 SQL `WHERE id=? AND user_id=?` — 다른 사용자 알림 영향 없음 (테스트 명시)
+- NotificationBadge: `app/(main)/layout.tsx` 에 sticky header 신설 후 마운트
+
+---
+
