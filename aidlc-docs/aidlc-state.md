@@ -36,7 +36,7 @@
 - [-] **User Stories** — SKIPPED (사용자 명시 선택, Application Design 직진)
 - [x] **Workflow Planning** — 비공식 (Q&A 대화를 통한 점진적 결정). 정식 산출물 없음. MVP 범위(§E2), 단위 분할 후보(design.md §7)로 대체
 - [x] **Application Design** — 산출물: `requirements/design.md` (라우트/API/DB 스키마/인증/컴포넌트). 사전 결정 3종: NextAuth(Credentials) / Route Handlers / Drizzle
-- [ ] **Units Generation** — 다음 단계. MVP를 [인증][파티 CRUD][지도][식당·메뉴 평가][추천 대시보드][해시태그 검색] 6개 단위 후보로 쪼개기
+- [~] **Units Generation** — Part 1 (Planning) 진행 중. Plan: `aidlc-docs/inception/plans/unit-of-work-plan.md` 작성 완료, 사용자 [Answer] 대기 중. 5개 질문 (모듈 분할 / 코드 조직 / 의존성 모델 / 구현 순서 / 테스트 수준)
 
 ### 🟢 CONSTRUCTION PHASE
 - [ ] Per-Unit Loop (각 단위별 Functional Design / NFR / Code Generation)

@@ -174,3 +174,64 @@
 **User Input**: "ㄱㄱ"
 **AI Response**: aidlc-docs 트래킹 파일 커밋·푸시 진행. 이어 Units Generation 단계 작업 시작 (`.aidlc-rule-details/inception/units-generation.md` 형식 따름)
 **Context**: 트래킹 파일 정식 도입 후 첫 정규 단계 진입
+
+---
+
+## [Units Generation Part 1 — Plan Drafted]
+**Timestamp**: 2026-05-13T14:45:00Z (approx)
+**AI Action**:
+- 디렉토리 생성: `aidlc-docs/inception/plans/`, `aidlc-docs/inception/application-design/`
+- `unit-of-work-plan.md` 작성: Default Proposal 7 모듈 (auth/party/restaurant/rating/recommendation/map/notification) + 기각 후보 분석 + 5개 Planning Questions ([Answer] 태그)
+- `aidlc-state.md` 업데이트 — Units Generation `[~]` Part 1 진행 중
+**Context**: Step 1~5 완료. Step 6 (Collect Answers) 진입. 채팅 `AskUserQuestion`과 plan 파일 [Answer] 태그 병행 사용
+**Next Action**: 사용자에게 5개 질문 채팅 표시 → 답변 받으면 plan 파일에 옮겨 적기 → Step 7 분석 → Step 8 follow-up 필요 시 → Step 9 승인 요청
+
+---
+
+## [Units Generation Q1] 모듈 분할
+**Timestamp**: 2026-05-13T14:50:00Z (approx)
+**Initial Answer**: "각 모듈에 대한 설명" (옵션 미선택, 자유 입력)
+**AI Response**: 7 모듈 책임을 한 문단씩 풀어서 채팅 표시. 동일 질문 재요청
+**Re-answer**: "그대로 7개 유지" → **Q1 = A**
+**Plan Update**: `[Answer]: A — 그대로 7개 유지`
+
+## [Units Generation Q2] 코드 조직
+**User Answer**: "Feature folders — features/{auth,party,...}/ 그룹화 (추천)" → **Q2 = A**
+**Plan Update**: `[Answer]: A — Feature folders`
+
+## [Units Generation Q3] 모듈 간 의존성
+**User Answer**: "Public API 컨벤션 — features/*/index.ts만 외부 공개, 내부 import 금지" → **Q3 = B**
+**Plan Update**: `[Answer]: B — Public API 컨벤션 (ESLint no-restricted-imports 강제)`
+
+## [Units Generation Q4] 구현 순서
+**Initial Answer**: "네명이 분할해서 개발할수 있도" (Other, 자유 텍스트)
+**AI Response**: 의존성 분석 후 4 트랙 default 제안 (T-A auth+notif / T-B restaurant+map / T-C party / T-D rating+rec) + 병렬화 전제 3종 (인터페이스 합의·DB 일괄 머지·Mock 의존 해소) 채팅 표시
+**Re-answer**: "default 그대로" → **Q4 = D (Other → 4 트랙 default 채택)**
+**Plan Update**: `[Answer]: D — 4명 병렬 4 트랙 구성 (T-A/T-B/T-C/T-D + 병렬화 전제 3종)`
+
+## [Units Generation Q5] 테스트·문서 수준
+**User Answer**: "무겁게 — 전반 unit+통합+E2E" → **Q5 = C**
+**Plan Update**: `[Answer]: C — 무거움 (4명 병렬 계약 고정 의도)`
+
+## [Units Generation Step 7] 답변 분석
+**Timestamp**: 2026-05-13T14:55:00Z (approx)
+**AI Analysis**: 모호한 응답·모순·미정의 용어 없음. follow-up 불필요.
+- 해석: 사용자 선택의 일관된 메시지 = *"각 모듈을 명확한 경계로 분리하고, 4명이 독립 진행할 수 있도록 인터페이스·테스트로 계약 고정"*
+- 리스크: "무거움" 테스트가 4명 속도 잡아먹을 수 있음 → contract test 우선·E2E 점진 확장 권장 (구현 단계 다룸)
+**Plan Update**: Step 7 Analysis 섹션에 결과 기록
+**Next Action**: Step 9 승인 요청
+
+---
+
+## [Step 9 승인 요청 채팅 표시]
+**Timestamp**: 2026-05-13T14:58:00Z (approx)
+**AI Prompt to User**: "Unit of work plan complete. Review the plan in `aidlc-docs/inception/plans/unit-of-work-plan.md`. Ready to proceed to generation?"
+**Context**: 핵심 결정 5종 + Part 2 산출물 3종 요약을 함께 표시
+
+---
+
+## [User Request — 커밋·푸시]
+**Timestamp**: 2026-05-13T15:00:00Z (approx)
+**User Input**: "푸쉬 ㄱ"
+**AI Response**: plan 승인 명시 전이지만, 푸시는 현재 상태 저장이므로 진행. unit-of-work-plan.md + state·audit 갱신본 커밋·푸시 후 plan 승인 여부 재확인
+**Context**: 사용자 톤상 묵시적 OK일 가능성 높으나 Part 2 진입 전 explicit confirm 한 번 더 요청 예정 (CLAUDE.md Step 9 준수)
