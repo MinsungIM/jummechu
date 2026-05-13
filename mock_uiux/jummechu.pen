@@ -217,15 +217,15 @@
                 },
                 "colors": [
                   {
-                    "color": "#A78BFA",
+                    "color": "#E9D5FF",
                     "position": 0
                   },
                   {
-                    "color": "#5B21B6",
-                    "position": 0.6
+                    "color": "#C4B5FD",
+                    "position": 0.5
                   },
                   {
-                    "color": "#1E1B4B",
+                    "color": "#A78BFA",
                     "position": 1
                   }
                 ]
@@ -234,7 +234,7 @@
               "effect": {
                 "type": "shadow",
                 "shadowType": "outer",
-                "color": "#7C3AED4D",
+                "color": "#C4B5FD66",
                 "offset": {
                   "x": 0,
                   "y": 8
@@ -262,7 +262,7 @@
                     {
                       "type": "text",
                       "id": "JsI4w",
-                      "fill": "$foreground-primary",
+                      "fill": "$foreground-inverse",
                       "content": "🎲",
                       "fontFamily": "Inter",
                       "fontSize": 22,
@@ -291,7 +291,7 @@
                       "type": "text",
                       "id": "yj3UD",
                       "opacity": 0.7,
-                      "fill": "#E5E7EB",
+                      "fill": "#5B21B6",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
                       "content": "히스토리·날씨 기반 1개 추천",
@@ -1407,11 +1407,15 @@
                     },
                     "colors": [
                       {
-                        "color": "#FB7185",
+                        "color": "#FECDD3",
                         "position": 0
                       },
                       {
-                        "color": "#9F1239",
+                        "color": "#FDA4AF",
+                        "position": 0.5
+                      },
+                      {
+                        "color": "#FB7185",
                         "position": 1
                       }
                     ]
@@ -1434,7 +1438,7 @@
                     {
                       "type": "text",
                       "id": "pVICJ",
-                      "fill": "#FFFFFF",
+                      "fill": "#9F1239",
                       "content": "혼밥 매칭",
                       "fontFamily": "Inter",
                       "fontSize": 11,
@@ -3312,11 +3316,15 @@
                     },
                     "colors": [
                       {
-                        "color": "#FB923C",
+                        "color": "#FED7AA",
                         "position": 0
                       },
                       {
-                        "color": "#DC2626",
+                        "color": "#FB923C",
+                        "position": 0.6
+                      },
+                      {
+                        "color": "#F97316",
                         "position": 1
                       }
                     ]
@@ -6689,47 +6697,47 @@
   "variables": {
     "accent-on-primary": {
       "type": "color",
-      "value": "#0A0A09"
+      "value": "#1F2937"
     },
     "accent-primary": {
       "type": "color",
-      "value": "#FFFFFF"
+      "value": "#FACC15"
     },
     "border-subtle": {
       "type": "color",
-      "value": "#FFFFFF1A"
+      "value": "#E5E7EB"
     },
     "category-han": {
       "type": "color",
-      "value": "#FF6B6B"
+      "value": "#EF4444"
     },
     "category-il": {
       "type": "color",
-      "value": "#5EE6A8"
+      "value": "#10B981"
     },
     "category-jung": {
       "type": "color",
-      "value": "#FFB454"
+      "value": "#F59E0B"
     },
     "category-yang": {
       "type": "color",
-      "value": "#A78BFA"
+      "value": "#6366F1"
     },
     "foreground-inverse": {
       "type": "color",
-      "value": "#0A0A09"
+      "value": "#FFFFFF"
     },
     "foreground-muted": {
       "type": "color",
-      "value": "#666666"
+      "value": "#9CA3AF"
     },
     "foreground-primary": {
       "type": "color",
-      "value": "#FFFFFF"
+      "value": "#1F2937"
     },
     "foreground-secondary": {
       "type": "color",
-      "value": "#999999"
+      "value": "#6B7280"
     },
     "radius-2xl": {
       "type": "number",
@@ -6749,47 +6757,47 @@
     },
     "surface-ground": {
       "type": "color",
-      "value": "#0A0A09"
+      "value": "#FAFAF6"
     },
     "surface-inverse": {
       "type": "color",
-      "value": "#FFFFFF"
+      "value": "#111827"
     },
     "surface-primary": {
       "type": "color",
-      "value": "#1A1A1A"
+      "value": "#FFFFFF"
     },
     "surface-secondary": {
       "type": "color",
-      "value": "#262626"
+      "value": "#F4F4F2"
     },
     "accent-blue": {
       "type": "color",
-      "value": "#0099FF"
+      "value": "#0EA5E9"
     },
     "gradient-coral": {
       "type": "color",
-      "value": "#FB7185"
+      "value": "#FDA4AF"
     },
     "gradient-magenta": {
       "type": "color",
-      "value": "#EC4899"
+      "value": "#F9A8D4"
     },
     "gradient-orange": {
       "type": "color",
-      "value": "#F97316"
+      "value": "#FDBA74"
     },
     "gradient-violet": {
       "type": "color",
-      "value": "#7C3AED"
+      "value": "#C4B5FD"
     },
     "gradient-violet-deep": {
       "type": "color",
-      "value": "#3B0764"
+      "value": "#7C3AED"
     },
     "hairline-soft": {
       "type": "color",
-      "value": "#FFFFFF0D"
+      "value": "#F3F4F6"
     },
     "radius-3xl": {
       "type": "number",
