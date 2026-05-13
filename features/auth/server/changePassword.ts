@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs'
-import { db } from '@/lib/db'
+import { getDb } from '@/lib/db'
 import { users } from '@/drizzle/schema/users'
 import { eq } from 'drizzle-orm'
 import { signupInputSchema } from './signupUser'
@@ -15,6 +15,7 @@ export class InvalidCurrentPasswordError extends Error {
 export async function changePassword(userId: number, oldPassword: string, newPassword: string): Promise<void> {
   signupInputSchema.shape.password.parse(newPassword)
 
+  const db = getDb()
   const rows = await db.select().from(users).where(eq(users.id, userId)).limit(1)
   const user = rows[0]
   if (!user) throw new Error('user not found')

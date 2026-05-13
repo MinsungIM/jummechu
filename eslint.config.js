@@ -1,14 +1,20 @@
 // Public API 컨벤션 강제 — features/{module}/index.ts만 외부 import 허용
 // (unit-of-work.md 결정 Q3=B)
-const { FlatCompat } = require('@eslint/eslintrc')
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-})
-
+//
+// Note: eslint-config-next 16.x + ESLint 9 flat config 호환 이슈로 next core-web-vitals
+// extends는 보류. 추후 (1) eslint-config-next 패치 또는 (2) @next/eslint-plugin-next 직접
+// 사용으로 복구 예정. 현재 lint는 Public API 컨벤션만 검사.
 module.exports = [
-  ...compat.extends('next/core-web-vitals'),
   {
+    ignores: [
+      '.next/**',
+      'node_modules/**',
+      'drizzle/migrations/**',
+      'tests/e2e/**', // playwright config과 충돌 회피
+    ],
+  },
+  {
+    files: ['**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -30,15 +36,13 @@ module.exports = [
     },
   },
   {
-    // features 모듈 내부에서는 자기 내부 import 허용 (위 규칙은 외부 import만 차단)
-    files: ['features/*/server/**', 'features/*/lib/**', 'features/*/components/**'],
+    // features 모듈 내부에서는 자기 내부 import 허용
+    files: ['features/*/server/**', 'features/*/lib/**', 'features/*/components/**', 'features/*/hooks/**'],
     rules: {
       'no-restricted-imports': 'off',
     },
   },
   {
-    // app/api Route Handler는 features public API 호출 정상
-    // tests는 모든 import 허용
     files: ['tests/**'],
     rules: {
       'no-restricted-imports': 'off',

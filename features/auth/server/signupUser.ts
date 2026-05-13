@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs'
 import { z } from 'zod'
-import { db } from '@/lib/db'
+import { getDb } from '@/lib/db'
 import { users } from '@/drizzle/schema/users'
 import { eq } from 'drizzle-orm'
 import { now } from '@/lib/time'
@@ -28,6 +28,7 @@ export class EmailAlreadyExistsError extends Error {
 export async function signupUser(input: SignupInput): Promise<User> {
   const parsed = signupInputSchema.parse(input)
 
+  const db = getDb()
   const existing = await db.select({ id: users.id }).from(users).where(eq(users.email, parsed.email)).limit(1)
   if (existing[0]) throw new EmailAlreadyExistsError()
 

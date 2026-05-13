@@ -2,7 +2,7 @@
 // design.md §4 결정 반영: Credentials Provider + JWT 세션 30일 슬라이딩
 import type { AuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { db } from '@/lib/db'
+import { getDb } from '@/lib/db'
 import { users } from '@/drizzle/schema'
 import { eq } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
@@ -19,7 +19,7 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null
-        const rows = await db.select().from(users).where(eq(users.email, credentials.email)).limit(1)
+        const rows = await getDb().select().from(users).where(eq(users.email, credentials.email)).limit(1)
         const user = rows[0]
         if (!user) return null
         const ok = await bcrypt.compare(credentials.password, user.passwordHash)

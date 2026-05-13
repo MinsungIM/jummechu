@@ -337,3 +337,60 @@
 **User Input**: "OK"
 **AI Action**: D+0 Common Scaffolding 80 파일 + Units Generation 3종 산출물 일괄 커밋·푸시 진행
 **Context**: 4 트랙(T-A/T-B/T-C/T-D) 병렬 개발 시작 가능 상태. 사용자가 `pnpm install` 실행하면 즉시 dev server 기동 가능
+
+---
+
+## [User Request — pnpm install 실행]
+**Timestamp**: 2026-05-13T16:05:00Z (approx)
+**User Input**: "pnpm install"
+**AI Action**: pnpm install 직접 실행 (advisor가 권장한 "사용자가 직접" 대신 사용자 명시 요청으로 실행)
+**Note**: pnpm-lock.yaml 생성됨 — 의존성 버전 고정. 이후 4 트랙 모두 동일 lockfile 기반 작업
+**Context**: 네트워크 fetch 발생, 시간 소요 예상
+
+## [pnpm install 결과]
+**Timestamp**: 2026-05-13T16:06:00Z (approx)
+**Result**:
+- 544 패키지 설치 완료 (29.4초)
+- pnpm-lock.yaml 생성
+- better-sqlite3 네이티브 빌드 성공
+- sharp/esbuild 등 postinstall 정상 종료
+**Warnings**:
+1. **CVE-2025-66478** — `next@15.0.3` deprecated. 같은 15.x 라인 패치 버전 업그레이드 필요
+2. **React 19 peer 미스매치** — Next 15.0.3이 React 19 RC를 기대 (1번 패치 시 해소)
+3. 5개 deprecated subdependencies (sub-dep, 직접 영향 미미)
+**Next Action**: 사용자에게 next 패치 업그레이드 여부 확인
+
+---
+
+## [User Decision — Next 16 메이저 업그레이드]
+**Timestamp**: 2026-05-13T16:08:00Z (approx)
+**User Input**: "16.x 메이저 업그레이드"
+**AI Action**:
+1. package.json: next 15.0.3 → 16.2.6, react/react-dom 19.0.0 → 19.2.6, eslint-config-next 15.0.3 → 16.2.6
+2. pnpm install 재실행
+3. pnpm build로 호환성 검증
+4. 에러 발생 시 D+0 코드(middleware, async params, route handlers, NextAuth v4 호환성) 조정
+**Risk**: NextAuth v4 + Next 16 호환성 미확인. 에러 발생 시 NextAuth v5(beta) 마이그레이션 또는 다른 조정 필요
+
+## [Next 16 호환성 조정]
+**Timestamp**: 2026-05-13T16:12:00Z (approx)
+**Issues Found & Fixed**:
+1. **빌드 시 SQLite 디렉토리 미존재 에러** — `lib/db.ts`가 module evaluation 시점에 DB 파일을 열어 `data/` 디렉토리가 없으면 실패. **Fix**: `getDb()` lazy initialization 패턴으로 변경. 호출자 4개 파일(`lib/auth.ts`, `features/auth/server/{getCurrentUser,signupUser,changePassword}.ts`) `db` → `getDb()` 호출 변경
+2. **middleware re-export 거부** — Next 16이 `export { default } from 'next-auth/middleware'` 형태 거부. **Fix**: `import { withAuth }` 명시 후 `export default withAuth({...})` 패턴
+3. **useSearchParams Suspense 누락** — `/login` 페이지 prerender 시 LoginForm의 `useSearchParams()`가 Suspense boundary 없이 실패. **Fix**: `<Suspense>` 래핑
+4. **`next lint` 제거** — Next 16에서 명령 제거됨. **Fix**: package.json scripts `"lint": "eslint ."`로 변경
+5. **eslint-config-next 16 + ESLint 9 flat config 호환성** — circular JSON 에러. **Fix**: `next/core-web-vitals` extends 보류. 자체 규칙(Public API 컨벤션)만 유지. 추후 정리
+
+**Build Result**: ✅ Next 16.2.6 빌드 통과 (Compile 3.4s + TS 3.9s), 17 페이지 + 14 dynamic API + middleware(Proxy로 표시) 정상
+**Test Result**: ✅ 3/3 smoke 통과 (vitest 909ms)
+**Lint Result**: ⚠️ TS 파서 미설치로 자체 규칙도 파싱 실패. 후속 작업 (`@typescript-eslint/parser` 추가)
+**Remaining Warnings**:
+- `middleware` 컨벤션 deprecated — Next 16은 `proxy.ts`로 rename 권장 (기능 영향 없음, 후속 작업)
+**Next Action**: 변경사항 커밋 의향 확인
+
+---
+
+## [User Decision — 커밋·푸시 후 트랙 선택]
+**Timestamp**: 2026-05-13T16:18:00Z (approx)
+**User Input**: "1번 진행 후 3번 진행"
+**AI Action**: (1) Next 16 마이그레이션 + 빌드 호환 fix + pnpm-lock 추가 커밋·푸시 → (2) 4 트랙 (T-A/T-B/T-C/T-D) 중 첫 트랙 선택 질문
