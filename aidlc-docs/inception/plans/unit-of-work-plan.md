@@ -32,11 +32,11 @@
 
 ## Mandatory Artifacts Checklist (Part 2에서 생성)
 
-- [ ] `aidlc-docs/inception/application-design/unit-of-work.md` — 모듈 정의·책임·코드 조직 (Greenfield)
-- [ ] `aidlc-docs/inception/application-design/unit-of-work-dependency.md` — 의존성 매트릭스
-- [ ] `aidlc-docs/inception/application-design/unit-of-work-story-map.md` — MVP IN 요구사항·화면을 모듈로 매핑
-- [ ] 모듈 경계·의존성 검증
-- [ ] 모든 MVP IN 요구사항이 모듈에 할당됨을 확인
+- [x] `aidlc-docs/inception/application-design/unit-of-work.md` — 모듈 정의·책임·코드 조직 (Greenfield)
+- [x] `aidlc-docs/inception/application-design/unit-of-work-dependency.md` — 의존성 매트릭스
+- [x] `aidlc-docs/inception/application-design/unit-of-work-story-map.md` — MVP IN 요구사항·화면을 모듈로 매핑
+- [x] 모듈 경계·의존성 검증 (DAG 사이클 없음 확인, M3↔M4 잠재 사이클은 M3→M4 일방향으로 해소)
+- [x] 모든 MVP IN 요구사항이 모듈에 할당됨을 확인 (story-map.md 누락 검증 섹션)
 
 ---
 

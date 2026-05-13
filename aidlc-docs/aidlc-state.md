@@ -36,7 +36,28 @@
 - [-] **User Stories** — SKIPPED (사용자 명시 선택, Application Design 직진)
 - [x] **Workflow Planning** — 비공식 (Q&A 대화를 통한 점진적 결정). 정식 산출물 없음. MVP 범위(§E2), 단위 분할 후보(design.md §7)로 대체
 - [x] **Application Design** — 산출물: `requirements/design.md` (라우트/API/DB 스키마/인증/컴포넌트). 사전 결정 3종: NextAuth(Credentials) / Route Handlers / Drizzle
-- [~] **Units Generation** — Part 1 (Planning) 진행 중. Plan: `aidlc-docs/inception/plans/unit-of-work-plan.md` 작성 완료, 사용자 [Answer] 대기 중. 5개 질문 (모듈 분할 / 코드 조직 / 의존성 모델 / 구현 순서 / 테스트 수준)
+- [x] **Units Generation** — Part 1 Plan + Part 2 산출물 3종 생성 완료. **묵시적 승인** (사용자 "코드 기본 틀 만들어" 명령으로 진행 의사 확인)
+  - Plan: `aidlc-docs/inception/plans/unit-of-work-plan.md` (5 결정 확정)
+  - 산출물: `aidlc-docs/inception/application-design/unit-of-work.md`, `unit-of-work-dependency.md`, `unit-of-work-story-map.md`
+  - 7 모듈 (M1 auth / M2 party / M3 restaurant / M4 rating / M5 recommendation / M6 map / M7 notification)
+  - 4 트랙 병렬 (T-A/T-B/T-C/T-D)
+  - DAG 검증 완료 (사이클 없음)
+
+### 🟢 CONSTRUCTION PHASE
+- [x] **D+0 Common Scaffolding** (per-unit loop 이전 단계 — unit-spanning 공통 골격) — 80 파일 한 배치 작성
+  - **A 인프라**: package.json (Next.js 15 / React 19 / NextAuth / Drizzle / Vitest / Playwright), tsconfig, next.config, tailwind.config (mock_uiux/jummechu.pen 토큰 반영), postcss, eslint (Public API 강제), .gitignore, .env.example, drizzle.config
+  - **B DB**: 9 테이블 Drizzle 스키마 (users, parties, party_members, restaurants, menus, tags, restaurant_tags, restaurant_ratings, menu_ratings)
+  - **C lib**: db.ts, auth.ts (NextAuth Credentials + JWT 30일 슬라이딩), time.ts (KST 헬퍼), http.ts
+  - **D middleware**: NextAuth withAuth 게이트
+  - **E M1 auth 실제 구현**: getCurrentUser/requireUser/signupUser/changePassword + LoginForm/SignupForm/ChangePasswordForm/LogoutButton + 회원가입·패스워드 변경 API
+  - **F UI 프리미티브** (mock 디자인 반영): Button, Input, Card, Modal, FloatingTabBar(yellow pill active + 분리형 FAB)
+  - **G M2~M7 stub**: features/{party,restaurant,rating,recommendation,map,notification}/index.ts — Public API 시그니처 exhaustive, throw not implemented
+  - **H app routes**: root layout + providers + (auth) login/signup + (main) layout/탭/도메인 페이지 placeholder
+  - **I API stubs**: 13개 Route Handler 501 응답 + 인증 2개 실제 구현
+  - **J 테스트 하네스**: vitest.config + playwright.config + smoke 3종 (unit/integration/e2e)
+  - **K**: README setup 가이드
+- [ ] Per-Unit Loop (4 트랙 병렬 시작 — T-A·T-B·T-C·T-D)
+- [ ] Build and Test
 
 ### 🟢 CONSTRUCTION PHASE
 - [ ] Per-Unit Loop (각 단위별 Functional Design / NFR / Code Generation)
