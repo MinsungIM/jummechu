@@ -460,3 +460,41 @@
 
 ---
 
+
+## [T-B 트랙 — Restaurant + Map Per-Unit Loop]
+**Timestamp**: 2026-05-13T~17:30Z
+**Context**: T-B 트랙 (M3 restaurant + M6 map) Functional Design + Code Generation Part 1·2 일괄 진행. Agent worktree 격리 환경에서 단일 batch 로 진행 (sub-batch 분리 없음).
+
+**산출물**:
+- Functional Design: `aidlc-docs/construction/restaurant-map/functional-design/functional-design.md`
+  - dep doc M3·M6 시그니처를 정본으로 채택 (작업 prompt 의 확장 함수와 충돌 시)
+  - 태그 정규화 단일 출처 (`normalizeTagLabel`): trim + 선행# 제거 + 내부 공백 정리 + lower + 50자 cap
+  - tagRestaurant 트랜잭션 패턴 (INSERT-ON-CONFLICT + restaurant_tags 멱등 + usage_count 재계산) — M2 joinParty 패턴 동일
+  - NaverMap 'use client' + SDK 싱글톤 로더 + 환경 변수 없으면 placeholder + console.warn
+- Code Generation Plan: `aidlc-docs/construction/restaurant-map/code/code-generation-plan.md` (12개 섹션 체크박스 모두 완료)
+
+**구현 파일 (한 배치)**:
+- M3 server: getRestaurant / getRestaurantSummary / listRestaurantsByTags / searchRestaurantsByTag / addMenu / getMenu / getMenusByRestaurant / suggestTags / getPopularTags / getAllRestaurantsForMap / tagRestaurant + _lib(errors/normalizeTag/loadRestaurantWithTags)
+- M3 components: RestaurantCard / RestaurantList / SearchInput / TagChip
+- M3 index.ts Public API stub → 실제 export 교체
+- M6: buildNaverDirectionsUrl + NaverMap (SDK 통합) + RestaurantMarker 보조 + index.ts 교체
+- API Route Handler (5개, 501 → 실제): /api/restaurants, /api/restaurants/[id], /api/restaurants/[id]/menus, /api/restaurants/[id]/tags, /api/tags
+- 페이지 (3개, placeholder → 실제): S1 식당 상세, S8 해시태그 검색, T2 지도 — 모두 `export const dynamic = 'force-dynamic'`
+- seed 스크립트: scripts/seed-restaurants.ts (dev 편의)
+
+**테스트 추가**:
+- unit: tests/unit/normalize-tag.test.ts (8), tests/unit/build-naver-directions-url.test.ts (5)
+- integration: tests/integration/restaurant-read.test.ts (13), restaurant-write.test.ts (9), restaurant-tag-concurrency.test.ts (2), map.test.ts (1)
+- tests/_helpers/factories.ts 에 makeRestaurant 추가
+
+**검증**:
+- `pnpm exec tsc --noEmit` → 통과
+- `pnpm test` → 74개 모두 통과 (기존 M2 35개 + T-B 신규 38개 + smoke 1개)
+- `pnpm lint` → 통과 (Public API 강제 위반 없음)
+- `pnpm build` → 통과 (12 정적 페이지 + dynamic routes 정상)
+
+**M2 회귀 확인**: 기존 party 테스트 35개 모두 통과. M2 의 M3 fallback 처리는 그대로 유지 (try/catch). 실제 M3 구현이 들어왔으므로 fallback 은 비활성 경로지만 안전성 그대로.
+
+**다음 단계**: 커밋 (push 금지), 후속 트랙 (T-A notification / T-D rating+recommendation) 대기.
+
+---

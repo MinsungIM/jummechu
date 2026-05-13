@@ -61,7 +61,8 @@
   - NFR Requirements 별도 stage 대신 Functional Design에 inline (advisor 결정)
   - NFR Design + Infrastructure Design: **SKIP** (변경 없음)
   - Code Generation: 3 sub-batch로 분할 (1 Read path / 2 Write path / 3 History+extras) — 각 sub-batch 별 build·test·commit·push
-- [ ] Per-Unit Loop — T-A notification / T-B restaurant+map / T-D rating+rec
+- [~] Per-Unit Loop — T-A notification / T-B restaurant+map / T-D rating+rec
+  - T-B restaurant+map: ✅ Functional Design + Code Generation 완료 (74개 테스트 통과, build·lint 통과). 산출물: `aidlc-docs/construction/restaurant-map/`. 한 배치 진행 (sub-batch 분리 없음).
 - [ ] Build and Test (모든 트랙 완료 후)
 
 ### 🟢 CONSTRUCTION PHASE
